@@ -1,8 +1,7 @@
 // Main pomodoro timer
 let mainTimer;
-let mainSeconds = 0;
+let mainSeconds = 0o0;
 let mainMinutes = 25;
-let mainHours = 0;
 let mainIsTimerRunning = false;
 
 const audio = new Audio('static/media/audio/Airtel Mp3 - Airtel Song.mp3');
@@ -15,37 +14,26 @@ function startMainTimer() {
 }
 
 function updateMainTimer() {
-	mainSeconds--;
-
-	if (mainSeconds < 0) {
-		mainSeconds = 59;
-
-		mainMinutes--;
-
-		if (mainMinutes < 0) {
-			mainMinutes = 59;
-
-			mainHours--;
-
-			if (mainHours < 0) {
-				clearInterval(mainTimer);
-				timerComplete();
-				return;
-			}
-		}
+	if (mainSeconds === 0o0 && mainMinutes === 0){
+		clearInterval(mainTimer);
+		mainIsTimerRunning = false;
+		timerComplete();
+		return;
 	}
 
+	if (mainSeconds === 0o0 ){
+		mainSeconds = 59;
+		mainMinutes--;
+	} else {
+		mainSeconds--;
+	}
 	updateMainTimerDisplay();
 }
 
-function updateMainTimerDisplay() {
-	const formattedMainHours = padTime(mainHours);
-	const formattedMainMinutes = padTime(mainMinutes);
-	const formattedMainSeconds = padTime(mainSeconds);
 
-	document.getElementById('hours').innerText = formattedMainHours;
-	document.getElementById('minutes').innerText = formattedMainMinutes;
-	document.getElementById('seconds').innerText = formattedMainSeconds;
+function updateMainTimerDisplay() {
+	document.getElementById('minutes').innerText = padTime(mainMinutes);
+	document.getElementById('seconds').innerText = padTime(mainSeconds);
 }
 
 function timerComplete() {
@@ -60,8 +48,7 @@ function pauseTimer() {
 function resetTimer() {
 	clearInterval(mainTimer);
 	mainIsTimerRunning = false;
-	mainSeconds = 0;
-	mainHours = 0;
+	mainSeconds = 0o0;
 	mainMinutes = 25;
 	updateMainTimerDisplay();
 }
@@ -76,15 +63,14 @@ function padTime(time) {
 const timers = {};
 
 function startITimer(timerId) {
-	const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0;
-	const initialSeconds = parseInt(document.getElementById(`initialSeconds${timerId}`).innerText) || 0;
+	const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0o0;
+	const initialSeconds = parseInt(document.getElementById(`initialSeconds${timerId}`).innerText) || 0o0;
 
 	const totalSeconds = initialMinutes * 60 + initialSeconds;
 
 	timers[timerId] = {
 		timer: setInterval(() => updateITimer(timerId), 1000),
 		isTimerRunning: true,
-		hours: 0,
 		minutes: initialMinutes,
 		seconds: initialSeconds,
 		totalSeconds: totalSeconds,
@@ -104,41 +90,32 @@ function updateITimer(timerId) {
 	let timer = timers[timerId];
 
 	// Check if the timer is running
-	if (timer.isTimerRunning) {
+	if (timer.seconds === 0o0 && timer.minutes === 0o0) {
+		clearInterval(timer.timer);
+		timer.isTimerRunning = false;
+		timerComplete(timerId);
+		return;
+	}
+
+	if (timer.seconds ===0o0 ) {
+		timer.seconds = 59;
+		timer.minutes--;
+	} else {
 		timer.seconds--;
-
-		if (timer.seconds < 0) {
-			timer.seconds = 59;
-			timer.minutes--;
-
-			if (timer.minutes < 0) {
-				timer.minutes = 59;
-				timer.hours--;
-
-				if (timer.hours < 0) {
-					clearInterval(timer.timer);
-					timerComplete(timerId);
-					timer.isTimerRunning = false;
-					return;
-				}
-			}
-		}
+	}
 
 		updateITimerDisplay(timerId);
 		updateProgressBar(timerId);
-	}
 }
 
 function updateProgressBar(timerId) {
 	let timer = timers[timerId];
 
-	// Check if the timer is still running
-	if (timer.isTimerRunning) {
-		let remainingSeconds = timer.hours * 3600 + timer.minutes * 60 + timer.seconds;
-		let progressPercentage = ((timer.totalSeconds - remainingSeconds) / timer.totalSeconds) * 100;
+	let remainingSeconds = timer.minutes * 60 + timer.seconds;
+	let progressPercentage = ((timer.totalSeconds - remainingSeconds) / timer.totalSeconds) * 100;
 
-		timer.progressBar.style.width = `${progressPercentage}%`;
-	}
+	timer.progressBar.style.width = `${progressPercentage}%`;
+
 }
 
 
@@ -161,7 +138,6 @@ function resumeITimer(timerId) {
 }
 
 function resetITimer(timerId) {
-	const timerIdInput = document.querySelector(`input.timerId[value='${timerId}']`);
 	const initialMinutes = parseInt(document.getElementById(`initialMinutes${timerId}`).innerText) || 0;
 	const initialSeconds = parseInt(document.getElementById(`initialSeconds${timerId}`).innerText) || 0;
 
@@ -181,12 +157,10 @@ function timerComplete(timerId) {
 }
 
 function updateITimerDisplay(timerId) {
-	let timer = timers[timerId];
-	const formattedHours = padTime(timer.hours);
+	let timer = timers[timerId];;
 	const formattedMinutes = padTime(timer.minutes);
 	const formattedSeconds = padTime(timer.seconds);
 
-	document.getElementById(`hours${timerId}`).innerText = formattedHours;
 	document.getElementById(`minutes${timerId}`).innerText = formattedMinutes;
 	document.getElementById(`seconds${timerId}`).innerText = formattedSeconds;
 }

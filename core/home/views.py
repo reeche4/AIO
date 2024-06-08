@@ -5,24 +5,23 @@ from django.contrib import auth
 from django.contrib import messages
 from .forms import PomodoroForm
 from django.db.models import Sum, F, ExpressionWrapper, fields
+from django.core.exceptions import ValidationError
 
 # views.py
 
 def pomodoro_timer(request):
 	timers = Timers.objects.all().order_by('priority')
 	form = PomodoroForm()
-    
-	if len(timers) == 0:
-		return render(request, 'pomodoro_timer.html',{
-			'form': form,
-			'editable': False,
-			'timers': None,
-        })
-	return render(request, 'pomodoro_timer.html',{
-		'form': form,
-		'editable': False,
-		'timers': None,
-    })
+
+	context = {
+		'form' : form,
+		'editable' : False,
+		'timers' : timers if timers.exists() else None,
+	}
+
+	return render(request, 'pomodoro.html', context)
+
+
 def login(request):
 	if request.method == "POST":
 		email = request.POST['email']
@@ -81,12 +80,12 @@ def add(request,id):
 			return redirect("pomodoro_timer")
 	else:
 		form = PomodoroForm()
-		timers = Timers.objects.all()
-		return render(request, 'pomodromo_timer.html', {
-			'form': form,
-			"editable": editable,
-			'timers': timers
-		})
+	timers = Timers.objects.all()
+	return render(request, 'pomodoro.html', {
+		'form': form,
+		'editable': editable,
+		'timers': timers
+	})
 
 
 def delete(request, id):
@@ -96,12 +95,12 @@ def delete(request, id):
 	timers = Timers.objects.all()
 	form = PomodoroForm()
 	if len(timers) == 0:
-		return render(request, 'pomodromo_timer.html', {
+		return render(request, 'pomodoro.html', {
 			'form': form,
 			"editable": False,
 			'timers': None
 		})
-	return render(request, 'pomodromo_timer.html', {
+	return render(request, 'pomodoro.html', {
 		'form': form,
 		"editable": False,
 		'timers': timers

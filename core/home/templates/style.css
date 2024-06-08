@@ -13,6 +13,9 @@ button {
 	font-size: 1em;
 	cursor: pointer;
 	margin: 0 5px;
+--color-primary: #f0f0f0;
+--color-secondary:#1f2241;
+--color-font:#000000;
 }
 
 .editable--form {
@@ -21,6 +24,9 @@ button {
 	padding: 1rem;
 	width: 50%;
 	margin: 0 auto;
+	--color-primary: #f0f0f0;
+	--color-secondary:#1f2241;
+	--color-font:#000000;
 }
 
 .editable--form--btn {
@@ -29,14 +35,19 @@ button {
 .round-time-bar {
 width: 100%;
 height: 20px;
-background-color: #f0f0f0;
+--color-primary: #f0f0f0;
+--color-secondary:#1f2241;
+--color-font:#000000;
 border-radius: 10px;
 overflow: hidden;
 }
 
 .round-time-bar div {
 height: 100%;
-background-color: #4caf50; /* Change this color to your preferred color */
+background-color: #273327; /* Change this color to your preferred color */
 border-radius: 10px;
 width: 0; /* Set initial width to zero *//* This duration should match the timer duration */
+--color-primary: #f0f0f0;
+--color-secondary:#1f2241;
+--color-font:#000000;
 }
